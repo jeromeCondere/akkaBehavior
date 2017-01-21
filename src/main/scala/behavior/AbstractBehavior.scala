@@ -1,11 +1,11 @@
 package behavior
 
-
+case class AskForRun(behavior:Behavior)
 
 abstract class AbstractBehavior(toRun:() => Unit){
-  //private var toRun = f
   
   protected def init = {}
    def run = {init; toRun() }
 }
+ 
 
