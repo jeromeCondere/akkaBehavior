@@ -2,14 +2,13 @@ package behavior
 import scala.concurrent.duration._
 import akka.actor.Actor
 
-class TimerBehavior(duration:FiniteDuration,implicit val a:Actor)(toRun:() => Unit) extends Behavior(toRun) {
+class TimerBehavior(duration:FiniteDuration,implicit val a:Actor)(toRun:() => Unit) extends AbstractBehavior(toRun) {
 
-  override def run() =
+  override final def run() =
   {
     init;
     val system=a.context.system
     import system.dispatcher
-    system.scheduler.scheduleOnce(duration){ toRun() }
-    
+    system.scheduler.scheduleOnce(duration){ toRun() } 
   }
 }

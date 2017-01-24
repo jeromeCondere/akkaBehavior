@@ -1,10 +1,10 @@
 import org.scalatest._
 import behavior._
-import behavior.Behavior.doNothing
+import behavior.OneShotBehavior.doNothing
 class BehaviorSpec extends FlatSpec {
   "A behavior" must "run the code properly" in {
     var a = 2
-    val be = Behavior{
+    val be = OneShotBehavior{
       a = a + 2
     }
     be.run
@@ -12,7 +12,7 @@ class BehaviorSpec extends FlatSpec {
    
   }
   it should "init properly" in {
-    class MyBehavior(toRun:() =>Unit) extends Behavior(toRun)
+    class MyBehavior(toRun:() =>Unit) extends OneShotBehavior(toRun)
     {
       var a =2
       override protected def init = a+=2
@@ -24,7 +24,7 @@ class BehaviorSpec extends FlatSpec {
   }
   it should "init before run" in
   {
-    class MyBehavior(toRun: =>Unit) extends Behavior(()=>toRun)
+    class MyBehavior(toRun: =>Unit) extends OneShotBehavior(()=>toRun)
     {
       var a =2
       
@@ -34,6 +34,9 @@ class BehaviorSpec extends FlatSpec {
     var be = new MyBehavior{a+=7}
     be.run
     assert(be.a==13)
+  }
+  it should "init only once" in {
+    
   }
   it should "change its structure dynamically" in
   {
