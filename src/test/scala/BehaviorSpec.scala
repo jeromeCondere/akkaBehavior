@@ -2,14 +2,14 @@ import org.scalatest._
 import behavior._
 import behavior.OneShotBehavior.doNothing
 import akka.actor._
-
-class BehaviorSpec extends FlatSpec {
-   class myActor extends Actor
+  class myActor extends Actor
    {
      def receive = {
        case _ =>
      }
    }
+class BehaviorSpec extends FlatSpec {
+ 
   val system = ActorSystem("system")
   implicit val actor = system.actorOf(Props[myActor], "actor")
   
@@ -17,7 +17,7 @@ class BehaviorSpec extends FlatSpec {
     var a = 2
     val be = OneShotBehavior{
       a = a + 2
-    }
+    }(actor)
     be.run
     assert(a==4)
    

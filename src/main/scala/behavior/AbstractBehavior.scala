@@ -27,7 +27,7 @@ abstract class AbstractBehavior(toRun:() => Unit)(implicit supervisor:ActorRef) 
       }    
   }
    def run = {toRun() }
-   def receive =
+  final def receive =
    {
      case Run => run
      case Stop => self ! PoisonPill
