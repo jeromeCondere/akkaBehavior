@@ -1,9 +1,9 @@
 package behavior
-
-class OneShotBehavior(toRun:() =>Unit) extends AbstractBehavior( toRun)  {
+import akka.actor.ActorRef
+class OneShotBehavior(toRun:() =>Unit)(implicit supervisor:ActorRef) extends AbstractBehavior( toRun)(supervisor)  {
  override def run = {toRun() }
 }
 object OneShotBehavior {
-  def apply(toRun: =>Unit) =new OneShotBehavior(()=> toRun)
+  def apply(toRun: =>Unit)(implicit supervisor:ActorRef) =new OneShotBehavior(()=> toRun)(supervisor)
   def doNothing = () => {}
 }
