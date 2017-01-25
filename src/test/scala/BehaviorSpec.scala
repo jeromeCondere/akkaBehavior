@@ -15,7 +15,7 @@ class BehaviorSpec extends TestKit(ActorSystem("MySpec")) with ImplicitSender
   
 implicit val actorRef = TestActorRef[myActor]
 
-  "A behavior" must {
+  "A behavior (general)" must {
   
     "run the code properly" in {
       var a = 2
@@ -47,7 +47,6 @@ implicit val actorRef = TestActorRef[myActor]
       class MyBehavior2(toRun:() =>Unit) extends OneShotBehavior(toRun)
       {
         var b =2
-        
         override protected def init = b+=4
       }
 
@@ -62,8 +61,29 @@ implicit val actorRef = TestActorRef[myActor]
    
   "change its structure dynamically" in
     {
-    
+      fail
     }
+}
+
+"A TimerBehavior" must {
+  
+  "execute after a determinded duration" in {
+    fail
+  }
+  
+  "send a Finished message after death to supervisor"  in {
+    fail
+  }
+  
+}
+
+"A TickerBehavior" must {
+  "exec repeatedly" in {
+    fail
+  }
+    "send a Finished message after death to supervisor"  in {
+    fail
+  }
 }
 
 }
