@@ -59,17 +59,11 @@ implicit val actorRef = TestActorRef[myActor]
       be.setup //setting up twice doesn't change the value
       assert(be.b== 6)
     }
-  
+   
+  "change its structure dynamically" in
+    {
+    
+    }
 }
- /* it should 
-  it should 
-  it should "init only once" in {
-    
-  }
-  it should "change its structure dynamically" in
-  {
-    
-  }
-  */
- 
+
 }
