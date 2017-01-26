@@ -23,3 +23,6 @@ class TimerBehavior(delay:FiniteDuration)(toRun:() => Unit)(implicit supervisor:
       } 
   }
 }
+object TimerBehavior {
+  def apply(delay:FiniteDuration)(toRun: =>Unit)(implicit supervisor:ActorRef) =new TimerBehavior(delay)(()=> toRun)
+}
