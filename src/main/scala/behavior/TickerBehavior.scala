@@ -9,7 +9,7 @@ import akka.actor.ActorRef
  * @constructor 
  * @param toRun the callback used to run the behavior
  * @param supervisor reference to the actor that use the behavior
- * @param period amount of time between two run
+ * @param period amount of time between two runs
  */
 class TickerBehavior (period:FiniteDuration)(toRun:() => Unit)(implicit supervisor:ActorRef) extends  AbstractBehavior(toRun){
   

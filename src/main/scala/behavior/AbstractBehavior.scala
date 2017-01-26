@@ -53,8 +53,8 @@ abstract class AbstractBehavior(toRun:() => Unit)(implicit supervisor:ActorRef) 
   
   /** run the behavior */
   def run = {toRun() }
-  /** receive method from Actor
-   *  */
+  
+  /** receive method from Actor */
   final def receive =
    {
      case Run => run
