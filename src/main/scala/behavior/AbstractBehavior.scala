@@ -14,6 +14,7 @@ case object AskForRun  extends AskMessage
 case object Run extends RequestMessage
 case object Stop extends RequestMessage
 case object Refuse extends RequestMessage
+case object Setup extends RequestMessage
 //Inform message
 case object Finished extends InformMessage
 
@@ -33,7 +34,7 @@ abstract class AbstractBehavior(toRun:() => Unit)(implicit supervisor:ActorRef) 
     supervisor ! Finished
     self ! PoisonPill
   }
-  protected def refused ={
+  protected def refused = {
     self ! PoisonPill
   }
    def run = {toRun() }
@@ -42,6 +43,7 @@ abstract class AbstractBehavior(toRun:() => Unit)(implicit supervisor:ActorRef) 
      case Run => run
      case Stop => killSelf
      case Refuse => refused
+     case Setup => setup
      case _ =>
    }
    

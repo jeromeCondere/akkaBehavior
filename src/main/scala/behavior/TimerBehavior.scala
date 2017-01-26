@@ -10,6 +10,7 @@ class TimerBehavior(duration:FiniteDuration)(toRun:() => Unit)(implicit supervis
     import system.dispatcher
     system.scheduler.scheduleOnce(duration){ 
       toRun() 
+      supervisor ! Finished
       } 
   }
 }
