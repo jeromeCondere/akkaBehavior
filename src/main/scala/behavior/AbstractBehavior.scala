@@ -18,10 +18,23 @@ case object Setup extends RequestMessage
 //Inform message
 case object Finished extends InformMessage
 
-
+/**
+ * Abstract Behavior 
+ * The classes extending this class are used by the agent
+ * @constructor 
+ * @param toRun the callback used to run the behavior
+ * @param supervisor reference to the actor that use the behavior
+ */
 abstract class AbstractBehavior(toRun:() => Unit)(implicit supervisor:ActorRef) extends Actor{
   private[this] var isInit = false 
+  /** 
+   *  -initialize the behavior
+   *  override this method when extending this class
+   *  */
   protected def init = {}
+  /** initialize the behavior before it runs 
+   *  ensure that the initialization is unique
+   *  */
   final def setup ={ 
     if(isInit ==false)
       {
@@ -29,7 +42,7 @@ abstract class AbstractBehavior(toRun:() => Unit)(implicit supervisor:ActorRef) 
         isInit=true
       }    
   }
-  // kill self and inform the supervisor that the behavior is finished
+  /** kill self and inform the supervisor that the behavior is finished*/
   final protected def killSelf = {
     supervisor ! Finished
     self ! PoisonPill
@@ -37,7 +50,11 @@ abstract class AbstractBehavior(toRun:() => Unit)(implicit supervisor:ActorRef) 
   protected def refused = {
     self ! PoisonPill
   }
-   def run = {toRun() }
+  
+  /** run the behavior */
+  def run = {toRun() }
+  /** receive method from Actor
+   *  */
   final def receive =
    {
      case Run => run

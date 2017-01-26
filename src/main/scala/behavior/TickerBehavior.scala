@@ -2,7 +2,16 @@ package behavior
 import scala.concurrent.duration._
 import akka.actor.ActorRef
 
-class TickerBehavior (duration:FiniteDuration)(toRun:() => Unit)(implicit supervisor:ActorRef) extends  AbstractBehavior(toRun){
+/**
+ * TickerBehavior 
+ * A behavior that run according to a frequency
+ * 
+ * @constructor 
+ * @param toRun the callback used to run the behavior
+ * @param supervisor reference to the actor that use the behavior
+ * @param period amount of time between two run
+ */
+class TickerBehavior (period:FiniteDuration)(toRun:() => Unit)(implicit supervisor:ActorRef) extends  AbstractBehavior(toRun){
   
   //once the behavior finished to run it ask for run again
   private[this] var isStarted = false
@@ -12,7 +21,7 @@ class TickerBehavior (duration:FiniteDuration)(toRun:() => Unit)(implicit superv
     {
     val system=context.system
     import system.dispatcher
-    system.scheduler.schedule(500 millis,duration){
+    system.scheduler.schedule(500 millis,period){
         if(stop==false)
         {
           toRun() 
@@ -27,6 +36,6 @@ class TickerBehavior (duration:FiniteDuration)(toRun:() => Unit)(implicit superv
     }
     
   }
-  //this method retun true to finish the behavior
+  /**this method retun true to finish the behavior*/
   protected def stop:Boolean ={false}
 }

@@ -86,4 +86,16 @@ implicit val actorRef = TestActorRef[myActor]
   }
 }
 
+"A ParallelBehavior" must {
+  "launch several behavior asynchronously" in {
+    fail
+  }
+    "receive a Finished message from every agent stopped"  in {
+    fail
+  }
+  
+}
+
+
+
 }
