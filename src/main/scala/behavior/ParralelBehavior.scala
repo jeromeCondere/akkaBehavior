@@ -13,6 +13,7 @@ import akka.actor.Props
  */
 class ParralelBehavior(behaviorList:List[AbstractBehavior]) (toRun:() =>Unit)(implicit supervisor:ActorRef) extends AbstractBehavior(toRun){
  
+  /** setup all Behaviors */
   override final protected def init ={
    behaviorList.zipWithIndex.foreach{
       case(behavior,index) => val actor = context.actorOf(Props(behavior), self.path.name +"parallel"+index )

@@ -3,7 +3,9 @@ import behavior._
 import behavior.OneShotBehavior.doNothing
 import akka.actor._
 import akka.testkit._
-  class myActor extends Actor
+import scala.concurrent.duration._
+
+  class SupervisorActor extends Actor
    {
      def receive = {
        case _ =>
@@ -13,7 +15,7 @@ class BehaviorSpec extends TestKit(ActorSystem("MySpec")) with ImplicitSender
   with WordSpecLike with Matchers with BeforeAndAfterAll {
  
   
-implicit val actorRef = TestActorRef[myActor]
+implicit val actorRef = TestActorRef[SupervisorActor]
 
   "A behavior (general)" must {
   
@@ -87,10 +89,16 @@ implicit val actorRef = TestActorRef[myActor]
 }
 
 "A ParallelBehavior" must {
-  "launch several behavior asynchronously" in {
+  
+  "init all behaviors correctly" in {
     fail
   }
-    "receive a Finished message from every agent stopped"  in {
+  
+  "launch several behaviors asynchronously" in {
+    fail
+  }
+  
+  "receive a Finished message from every agent stopped"  in {
     fail
   }
   
