@@ -72,10 +72,12 @@ implicit val actorRef = TestActorRef[SupervisorActor]
   "execute after a determinded duration" in {
     var a =2
     var beRef =TestActorRef(TimerBehavior(1 seconds){
+      info("youhou")
       a+=4
     })
     within(1 seconds)
     {
+      
        beRef ! Run
       assert(a==2)
     }
