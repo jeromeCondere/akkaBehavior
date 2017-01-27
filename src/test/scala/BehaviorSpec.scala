@@ -14,8 +14,8 @@ import scala.concurrent.duration._
 class BehaviorSpec extends TestKit(ActorSystem("MySpec")) with ImplicitSender
   with WordSpecLike with Matchers with BeforeAndAfterAll {
  
-  
-implicit val actorRef = TestActorRef[SupervisorActor]
+// the supervisor is the implicit sender   
+implicit val systemSupervisor = self
 
   "A behavior (general)" must {
   
@@ -23,8 +23,8 @@ implicit val actorRef = TestActorRef[SupervisorActor]
       var a = 2
       val beRef = TestActorRef(OneShotBehavior{
         a = a + 2
-      }(actorRef) )
-      
+      } )
+      assert(a==2)
       val be = beRef.underlyingActor
       be.run
       assert(a==4)
@@ -70,23 +70,21 @@ implicit val actorRef = TestActorRef[SupervisorActor]
 "A TimerBehavior" must {
   
   "execute after a determinded duration" in {
+    case object Okay
     var a =2
-    var beRef =TestActorRef(TimerBehavior(1 seconds){
-      info("youhou")
-      a+=4
+    var beRef = TestActorRef(TimerBehavior(100 millis){
+      a+=3
     })
-    within(1 seconds)
-    {
-      
-       beRef ! Run
-      assert(a==2)
-    }
-    assert(a==4)
-    fail
+      beRef ! Run
+      awaitCond(a==5, 190 millis) // we give +90 millis to check if a has been updated
   }
   
   "send a Finished message after death to supervisor"  in {
-    fail
+    var beRef = TestActorRef(TimerBehavior(50 millis){
+      
+    })
+      beRef ! Run
+      expectMsg(70 millis,Finished)
   }
   
 }
