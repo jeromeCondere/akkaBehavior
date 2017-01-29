@@ -5,3 +5,5 @@ project/target/
 .project
 .c*
 /bin/
+.settings/
+Main.scala
