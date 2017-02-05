@@ -19,7 +19,7 @@ case object Setup extends RequestMessage
 case object Finished extends InformMessage
 
 /**
- * Abstract Behavior 
+ * Abstract Behavior <br>
  * The classes extending this class are used by the agent
  * @constructor 
  * @param toRun the callback used to run the behavior
@@ -28,11 +28,13 @@ case object Finished extends InformMessage
 abstract class AbstractBehavior(toRun:() => Unit)(implicit supervisor:ActorRef) extends Actor{
   private[this] var isInit = false 
   /** 
-   *  -initialize the behavior
+   *  initialize the behavior <br>
    *  override this method when extending this class
+   *  
    *  */
   protected def init = {}
-  /** initialize the behavior before it runs 
+  /** 
+   *  initialize the behavior before it runs <br>
    *  ensure that the initialization is unique
    *  */
   final def setup ={ 

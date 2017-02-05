@@ -3,7 +3,7 @@ import scala.concurrent.duration._
 import akka.actor.ActorRef
 
 /**
- * TimerBehavior 
+ * TimerBehavior <br>
  * A behavior that run only once after a delay and when finished send a Finished message to its supervisor
  * 
  * @constructor 

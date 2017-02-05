@@ -4,7 +4,7 @@ import akka.actor.Props
 
 
 /**
- * ParralelBehavior	 
+ * ParralelBehavior	 <br>
  * A behavior that runs a list of behaviors asynchronously
  * @constructor
  * @param list of behaviors to run asynchronously 

@@ -3,7 +3,7 @@ import scala.concurrent.duration._
 import akka.actor.ActorRef
 
 /**
- * TickerBehavior 
+ * TickerBehavior <br>
  * A behavior that run according to a frequency
  * 
  * @constructor 
