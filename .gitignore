@@ -6,4 +6,4 @@ project/target/
 .c*
 /bin/
 .settings/
-Main.scala
+src/main/scala/Main.scala
