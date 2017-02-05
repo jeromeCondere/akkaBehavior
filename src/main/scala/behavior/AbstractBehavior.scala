@@ -30,7 +30,6 @@ abstract class AbstractBehavior(toRun:() => Unit)(implicit supervisor:ActorRef) 
   /** 
    *  initialize the behavior <br>
    *  override this method when extending this class
-   *  
    *  */
   protected def init = {}
   /** 
