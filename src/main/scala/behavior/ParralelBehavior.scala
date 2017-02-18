@@ -13,6 +13,7 @@ import scala.reflect.ClassTag
  */
 class ParralelBehavior[A <: AbstractBehavior](behaviorProxyList:List[BehaviorProxy[A]]) (toRun:() =>Unit)(implicit supervisor:ActorRef) extends AbstractBehavior(toRun){
  
+  //to do find a way to override init (if not it won't be used in setup)
   /** setup all Behaviors */
    final protected def init(implicit c: ClassTag[A]) = {
    behaviorProxyList.zipWithIndex.foreach{
@@ -24,7 +25,7 @@ class ParralelBehavior[A <: AbstractBehavior](behaviorProxyList:List[BehaviorPro
 
   /** run all behavior in the list of behaviors */
   override def run = {
-    //send run message to all message
+    //send run message to all actors
    context.children.foreach{
      behavior => behavior ! Run
    }

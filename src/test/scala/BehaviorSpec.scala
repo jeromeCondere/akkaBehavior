@@ -91,6 +91,12 @@ implicit val systemSupervisor = self
 
 "A TickerBehavior" must {
   "exec repeatedly" in {
+    var e = 2
+    //todo create a class that extends ticker behavior and make a counter
+    var beRef = TestActorRef(TickerBehavior(50 millis){
+      
+    })
+    
     fail
   }
     "send a Finished message after death to supervisor"  in {
