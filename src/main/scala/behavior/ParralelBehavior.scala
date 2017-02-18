@@ -1,7 +1,7 @@
 package behavior
 import akka.actor.ActorRef
 import akka.actor.Props
-
+import proxy.BehaviorProxy
 
 /**
  * ParralelBehavior	 <br>
@@ -11,12 +11,12 @@ import akka.actor.Props
  * @param toRun the callback used to run the behavior
  * @param supervisor reference to the actor that use the behavior
  */
-class ParralelBehavior(behaviorList:List[AbstractBehavior]) (toRun:() =>Unit)(implicit supervisor:ActorRef) extends AbstractBehavior(toRun){
+class ParralelBehavior[A <: AbstractBehavior](behaviorProxyList:List[BehaviorProxy[A]]) (toRun:() =>Unit)(implicit supervisor:ActorRef) extends AbstractBehavior(toRun){
  
   /** setup all Behaviors */
   override final protected def init ={
-   behaviorList.zipWithIndex.foreach{
-      case(behavior,index) => val actor = context.actorOf(Props(behavior), self.path.name +"parallel"+index )
+   behaviorProxyList.zipWithIndex.foreach{
+      case(behaviorProxy,index) => val actor = context.actorOf(Props(behaviorProxy.behavior), self.path.name +"parallel"+index )
                               context.watch(actor)
                               actor ! Setup 
     }
