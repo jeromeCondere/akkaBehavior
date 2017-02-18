@@ -2,7 +2,7 @@ package behavior
 import akka.actor.ActorRef
 import akka.actor.Props
 import proxy.BehaviorProxy
-
+import scala.reflect.ClassTag 
 /**
  * ParralelBehavior	 <br>
  * A behavior that runs a list of behaviors asynchronously
@@ -14,14 +14,14 @@ import proxy.BehaviorProxy
 class ParralelBehavior[A <: AbstractBehavior](behaviorProxyList:List[BehaviorProxy[A]]) (toRun:() =>Unit)(implicit supervisor:ActorRef) extends AbstractBehavior(toRun){
  
   /** setup all Behaviors */
-  override final protected def init ={
+   final protected def init(implicit c: ClassTag[A]) = {
    behaviorProxyList.zipWithIndex.foreach{
       case(behaviorProxy,index) => val actor = context.actorOf(Props(behaviorProxy.behavior), self.path.name +"parallel"+index )
                               context.watch(actor)
                               actor ! Setup 
     }
   }
-  
+
   /** run all behavior in the list of behaviors */
   override def run = {
     //send run message to all message

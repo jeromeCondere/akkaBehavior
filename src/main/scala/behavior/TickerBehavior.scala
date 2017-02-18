@@ -34,3 +34,7 @@ class TickerBehavior (period:FiniteDuration)(toRun:() => Unit)(implicit supervis
   /**this method retun true to finish the behavior*/
   protected def stop:Boolean ={false}
 }
+
+object TickerBehavior {
+  def apply(delay:FiniteDuration)(toRun: =>Unit)(implicit supervisor:ActorRef) = new TickerBehavior(delay)(()=> toRun)
+}

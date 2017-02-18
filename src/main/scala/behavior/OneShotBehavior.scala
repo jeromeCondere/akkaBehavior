@@ -20,6 +20,6 @@ class OneShotBehavior(toRun:() =>Unit)(implicit supervisor:ActorRef) extends Abs
 }
 
 object OneShotBehavior {
-  def apply(toRun: =>Unit)(implicit supervisor:ActorRef) =new OneShotBehavior(()=> toRun)
+  def apply(toRun: =>Unit)(implicit supervisor:ActorRef) = new OneShotBehavior(()=> toRun)
   def doNothing = () => {}
 }
