@@ -23,14 +23,9 @@ class TickerBehavior (period:FiniteDuration)(toRun:() => Unit)(implicit supervis
     import system.dispatcher
     system.scheduler.schedule(500 millis,period){
         if(stop==false)
-        {
           toRun() 
-        }
         else
-        {
           killSelf 
-        }
-   
       } 
     isStarted = true
     }
