@@ -5,12 +5,6 @@ import akka.actor._
 import akka.testkit._
 import scala.concurrent.duration._
 
-  class SupervisorActor extends Actor
-   {
-     def receive = {
-       case _ =>
-     }
-   }
 class BehaviorSpec extends TestKit(ActorSystem("MySpec")) with ImplicitSender
   with WordSpecLike with Matchers with BeforeAndAfterAll {
  

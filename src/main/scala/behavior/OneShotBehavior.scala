@@ -14,9 +14,9 @@ class OneShotBehavior(toRun:() =>Unit)(implicit supervisor:ActorRef) extends Abs
 
   /** run the behavior and then finish*/
   final override def run = {
-                     toRun() 
-                     supervisor ! Finished //tell the supervisor we have finished
-                    }
+     toRun() 
+     supervisor ! Finished //tell the supervisor we have finished
+  }
 }
 
 object OneShotBehavior {
