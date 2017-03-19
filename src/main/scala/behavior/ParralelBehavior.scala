@@ -3,6 +3,7 @@ import akka.actor.ActorRef
 import akka.actor.Props
 import proxy.BehaviorProxy
 import scala.reflect.ClassTag 
+import scala.reflect._
 /**
  * ParralelBehavior	 <br>
  * A behavior that runs a list of behaviors asynchronously
@@ -21,7 +22,9 @@ class ParralelBehavior[A <: AbstractBehavior](behaviorProxyList:List[BehaviorPro
                               context.watch(actor)
                               actor ! Setup 
     }
+   println("issou")
   }
+   
 
   /** run all behavior in the list of behaviors */
   override def run = {

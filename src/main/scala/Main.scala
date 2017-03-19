@@ -12,8 +12,6 @@ class myActor extends Actor
 object Main extends App {
  val system = ActorSystem("system")
  
- val f = ()=>{
-   List( new myActor, new myActor)
- }
+
  
 }
