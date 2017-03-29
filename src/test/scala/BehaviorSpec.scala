@@ -85,22 +85,31 @@ implicit val systemSupervisor = self
 
 "A TickerBehavior" must {
   "exec repeatedly" in {
-    var e = 2
-    //todo create a class that extends ticker behavior and make a counter
+    var e = 0
     var beRef = TestActorRef(TickerBehavior(50 millis){
-      
+      e+=2
     })
     
-    fail
+    beRef ! Run
+    // we test every 40 millis if the condition holds
+    awaitCond(e==20, 600 millis, 40 millis)
+    beRef ! Stop
+    
   }
     "send a Finished message after death to supervisor"  in {
-    fail
+     var beRef = TestActorRef(TickerBehavior(50 millis){
+      
+    })
+      beRef ! Run
+      beRef ! Stop
+      expectMsg(Finished)
   }
 }
 
 "A ParallelBehavior" must {
   
   "init all behaviors correctly" in {
+    
     fail
   }
   
