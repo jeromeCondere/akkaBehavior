@@ -1,5 +1,6 @@
 import org.scalatest._
 import behavior._
+import behavior.proxy.BehaviorProxy
 import behavior.OneShotBehavior.doNothing
 import akka.actor._
 import akka.testkit._
@@ -40,13 +41,13 @@ implicit val systemSupervisor = self
    
    "init only once" in {
      
-      class MyBehavior2(toRun:() =>Unit) extends OneShotBehavior(toRun)
+      class MyBehavior(toRun:() =>Unit) extends OneShotBehavior(toRun)
       {
         var b =2
         override protected def init = b+=4
       }
 
-      var beRef = TestActorRef( new MyBehavior2(()=>{}) )
+      var beRef = TestActorRef( new MyBehavior(()=>{}) )
       val be = beRef.underlyingActor
       assert(be.b==2)
       be.setup
@@ -69,16 +70,18 @@ implicit val systemSupervisor = self
     var beRef = TestActorRef(TimerBehavior(100 millis){
       a+=3
     })
-      beRef ! Run
-      awaitCond(a==5, 190 millis) // we give +90 millis to check if a has been updated
+    
+    beRef ! Run
+    awaitCond(a==5, 190 millis) // we give +90 millis to check if a has been updated
   }
   
   "send a Finished message after death to supervisor"  in {
     var beRef = TestActorRef(TimerBehavior(50 millis){
       
     })
-      beRef ! Run
-      expectMsg(70 millis,Finished)
+    
+    beRef ! Run
+    expectMsg(70 millis,Finished)
   }
   
 }
@@ -109,7 +112,17 @@ implicit val systemSupervisor = self
 "A ParallelBehavior" must {
   
   "init all behaviors correctly" in {
+    var a = 4
+    class MyBehavior(toRun:() =>Unit) extends OneShotBehavior(toRun)
+    {
+      var b =2
+      override protected def init = a+=b
+    }
     
+    val bp1 = BehaviorProxy{new MyBehavior(OneShotBehavior.doNothing)}
+    val bp2 = BehaviorProxy{new MyBehavior(OneShotBehavior.doNothing)}
+    val listBp = List(bp1,bp2)
+     
     fail
   }
   
