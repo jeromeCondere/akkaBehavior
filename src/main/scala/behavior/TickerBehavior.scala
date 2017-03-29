@@ -18,7 +18,7 @@ class TickerBehavior (period:FiniteDuration)(toRun:() => Unit)(implicit supervis
   private[this] var isStarted = false
   override final def run() =
   {
-    if (isStarted==false)
+    if (isStarted == false)
     {
       val system = context.system
       import system.dispatcher
@@ -33,7 +33,7 @@ class TickerBehavior (period:FiniteDuration)(toRun:() => Unit)(implicit supervis
     
   }
   /**this method retun true to finish the behavior*/
-  protected def stop:Boolean ={false}
+  protected def stop:Boolean = {false}
 }
 
 object TickerBehavior {
