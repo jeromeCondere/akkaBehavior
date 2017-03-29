@@ -19,10 +19,10 @@ class TickerBehavior (period:FiniteDuration)(toRun:() => Unit)(implicit supervis
   {
     if (isStarted==false)
     {
-    val system=context.system
+    val system = context.system
     import system.dispatcher
     system.scheduler.schedule(500 millis,period){
-        if(stop==false)
+        if(stop == false)
           toRun() 
         else
           killSelf 
