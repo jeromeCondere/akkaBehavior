@@ -112,18 +112,26 @@ implicit val systemSupervisor = self
 "A ParallelBehavior" must {
   
   "init all behaviors correctly" in {
-    var a = 4
+    var a1 = 4
+    var a2 = 6
     class MyBehavior(toRun:() =>Unit) extends OneShotBehavior(toRun)
     {
-      var b =2
-      override protected def init = a+=b
+      override protected def init = { a1+=2; print(a1+" ")}
+       
+    }
+    class MyBehaviorBis(toRun:() =>Unit) extends OneShotBehavior(toRun)
+    {
+      override protected def init = a2+=3
     }
     
     val bp1 = BehaviorProxy{new MyBehavior(OneShotBehavior.doNothing)}
     val bp2 = BehaviorProxy{new MyBehavior(OneShotBehavior.doNothing)}
     val listBp = List(bp1,bp2)
-     
-    fail
+    var beRef = TestActorRef(new ParralelBehavior(listBp),"parrallel")
+    
+    beRef ! Setup
+    awaitCond(a1==6 && a2==9, 300 millis)
+    
   }
   
   "launch several behaviors asynchronously" in {

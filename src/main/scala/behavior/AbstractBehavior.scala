@@ -37,10 +37,10 @@ abstract class AbstractBehavior(toRun:() => Unit)(implicit supervisor:ActorRef) 
    *  ensure that the initialization is unique
    *  */
   final def setup = { 
-    if(isInit ==false)
+    if(isInit == false)
       {
         init
-        isInit=true
+        isInit = true
       }    
   }
   /** kill self and inform the supervisor that the behavior is finished*/
