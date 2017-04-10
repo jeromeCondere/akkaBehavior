@@ -1,5 +1,6 @@
 package behavior
 import akka.actor.ActorRef
+import akka.actor.FSM
 import akka.actor.Actor
 import akka.actor.PoisonPill
 sealed trait BehaviorMessage
@@ -15,8 +16,22 @@ case object Run extends RequestMessage
 case object Stop extends RequestMessage
 case object Refuse extends RequestMessage
 case object Setup extends RequestMessage
+case object Poke extends RequestMessage
 //Inform message
 case object Finished extends InformMessage
+
+sealed trait BehaviorState
+case object Idle extends BehaviorState
+case object Ready extends BehaviorState
+case object Running extends BehaviorState
+case object FinishedRun extends BehaviorState
+case object Ended extends BehaviorState
+case object Waiting extends BehaviorState
+case object Killed extends BehaviorState
+
+
+sealed trait BehaviorData
+case object Void extends BehaviorData
 
 /**
  * Abstract Behavior <br>
@@ -25,45 +40,61 @@ case object Finished extends InformMessage
  * @param toRun the callback used to run the behavior
  * @param supervisor reference to the actor that use the behavior
  */
-abstract class AbstractBehavior(toRun:() => Unit)(implicit supervisor:ActorRef) extends Actor{
+abstract class AbstractBehavior(toRun:() => Unit)(implicit supervisor:ActorRef) extends FSM[BehaviorState,BehaviorData]{
   private[this] var isInit = false 
   /** 
    *  initialize the behavior <br>
    *  override this method when extending this class
    *  */
   protected def init = {}
-  /** 
-   *  initialize the behavior before it runs <br>
-   *  ensure that the initialization is unique
-   *  */
-  final def setup = { 
-    if(isInit == false)
-      {
-        init
-        isInit = true
-      }    
-  }
-  /** kill self and inform the supervisor that the behavior is finished*/
-  final protected def killSelf = {
-    supervisor ! Finished
-    self ! PoisonPill
-  }
-  protected def refused = {
-    self ! PoisonPill
-  }
   
   /** run the behavior */
-  def run = {toRun() }
+  def run = {
+    toRun() 
+    self ! FinishedRun
+  }
   
-  /** receive method from Actor */
-  final def receive =
-   {
-     case Run => run
-     case Stop => killSelf
-     case Refuse => refused
-     case Setup => setup
-     case _ =>
-   }
+  startWith(Idle, Void)
+  
+  when(Idle)
+  {
+     case Event(Setup,_) => init
+                            goto(Ready) 
+     case Event(Stop, _) => self ! Poke
+                            goto(Killed)
+     case _ => stay() 
+     
+  }
+
+  when(Ready)
+  {
+     case Event(Run, _) => run
+                           goto(Running) 
+     case Event(Stop, _) => self ! Poke
+                            goto(Killed)
+     case _ => stay() 
+     
+  }
+  
+  when(Running)
+  {
+     case Event(FinishedRun, _) => self ! Poke
+                                   goto(Ended) 
+     case Event(Stop, Void) => goto(Killed)
+     case _ => stay() 
+  }
+  
+  when(Ended)
+  {
+     case _ => supervisor ! Finished
+               stop()
+  }
+   
+  when(Killed)
+  {
+     case _ => stop()
+  }
+  
    
 }
  

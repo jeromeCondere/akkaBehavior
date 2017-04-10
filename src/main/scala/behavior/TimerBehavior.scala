@@ -19,7 +19,7 @@ class TimerBehavior(delay:FiniteDuration)(toRun:() => Unit)(implicit supervisor:
     import system.dispatcher
     system.scheduler.scheduleOnce(delay){ 
       toRun() 
-      supervisor ! Finished
+      self ! FinishedRun
       } 
   }
 }

@@ -23,17 +23,20 @@ class TickerBehavior (period:FiniteDuration)(toRun:() => Unit)(implicit supervis
       val system = context.system
       import system.dispatcher
       system.scheduler.schedule(50 millis, period){
-          if(stop == false)
-            toRun() 
+          if(stopTicker == false)
+            {
+              toRun() 
+              self ! FinishedRun
+            }
           else
-            killSelf 
+            self ! Stop 
       } 
       isStarted = true
     }
     
   }
   /**this method retun true to finish the behavior*/
-  protected def stop:Boolean = {false}
+  protected def stopTicker:Boolean = {false}
 }
 
 object TickerBehavior {

@@ -21,8 +21,9 @@ implicit val systemSupervisor = self
       } )
       assert(a==2)
       val be = beRef.underlyingActor
-      be.run
-      assert(a==4)
+      beRef ! Setup
+      beRef ! Run
+      awaitCond(a == 4, 50 millis)
      }
     
    "init properly" in {
@@ -33,9 +34,10 @@ implicit val systemSupervisor = self
         override protected def init = a+=2
       }
       val beRef = TestActorRef (new MyBehavior(doNothing) )
-      val be =beRef.underlyingActor
-      be.setup
+      val be = beRef.underlyingActor
+      beRef ! Setup
       assert(be.a==4)
+      awaitCond(be.a == 4, 50 millis)
    
   }
    
@@ -50,15 +52,10 @@ implicit val systemSupervisor = self
       var beRef = TestActorRef( new MyBehavior(()=>{}) )
       val be = beRef.underlyingActor
       assert(be.b==2)
-      be.setup
-      assert(be.b==6)
-      be.setup //setting up twice doesn't change the value
-      assert(be.b== 6)
-    }
-   
-  "change its structure dynamically" in
-    {
-      fail
+      beRef ! Setup
+      awaitCond(be.b == 6, 50 millis)
+      beRef ! Setup //setting up twice doesn't change the value
+      awaitCond(be.b == 6, 100 millis)
     }
 }
 
@@ -71,6 +68,7 @@ implicit val systemSupervisor = self
       a+=3
     })
     
+    beRef ! Setup
     beRef ! Run
     awaitCond(a==5, 190 millis) // we give +90 millis to check if a has been updated
   }
@@ -80,6 +78,7 @@ implicit val systemSupervisor = self
       
     })
     
+    beRef ! Setup
     beRef ! Run
     expectMsg(70 millis,Finished)
   }
@@ -92,7 +91,7 @@ implicit val systemSupervisor = self
     var beRef = TestActorRef(TickerBehavior(50 millis){
       e+=2
     })
-    
+    beRef ! Setup
     beRef ! Run
     // we test every 40 millis if the condition holds
     awaitCond(e==20, 600 millis, 40 millis)
@@ -103,6 +102,7 @@ implicit val systemSupervisor = self
      var beRef = TestActorRef(TickerBehavior(50 millis){
       
     })
+      beRef ! Setup
       beRef ! Run
       beRef ! Stop
       expectMsg(Finished)
@@ -123,7 +123,7 @@ implicit val systemSupervisor = self
     {
       override protected def init = a2+=3
     }
-    
+    //double setup
     val bp1 = BehaviorProxy{new MyBehavior(OneShotBehavior.doNothing)}
     val bp2 = BehaviorProxy{new MyBehavior(OneShotBehavior.doNothing)}
     val listBp = List(bp1,bp2)
