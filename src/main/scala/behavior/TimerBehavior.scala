@@ -11,7 +11,7 @@ import akka.actor.ActorRef
  * @param supervisor reference to the actor that use the behavior
  * @param delay amount of time to wait before run the behavior
  */
-class TimerBehavior(delay:FiniteDuration)(toRun:() => Unit)(implicit supervisor:ActorRef) extends AbstractBehavior(toRun) {
+class TimerBehavior(delay:FiniteDuration)(toRun:() => Unit) extends AbstractBehavior(toRun) {
 
   override final def run() =
   {
@@ -24,5 +24,5 @@ class TimerBehavior(delay:FiniteDuration)(toRun:() => Unit)(implicit supervisor:
   }
 }
 object TimerBehavior {
-  def apply(delay:FiniteDuration)(toRun: =>Unit)(implicit supervisor:ActorRef) = new TimerBehavior(delay)(()=> toRun)
+  def apply(delay:FiniteDuration)(toRun: =>Unit) = new TimerBehavior(delay)(()=> toRun)
 }

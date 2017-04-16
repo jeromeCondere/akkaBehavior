@@ -11,7 +11,7 @@ import akka.actor.ActorRef
  * @param supervisor reference to the actor that use the behavior
  * @param period amount of time between two runs
  */
-class TickerBehavior (period:FiniteDuration)(toRun:() => Unit)(implicit supervisor:ActorRef) extends  AbstractBehavior(toRun){
+class TickerBehavior (period:FiniteDuration)(toRun:() => Unit) extends  AbstractBehavior(toRun){
   //TODO rajouter un paramètre d'initial delay
   
   //once the behavior finished to run it ask for run again
@@ -40,5 +40,5 @@ class TickerBehavior (period:FiniteDuration)(toRun:() => Unit)(implicit supervis
 }
 
 object TickerBehavior {
-  def apply(delay:FiniteDuration)(toRun: =>Unit)(implicit supervisor:ActorRef) = new TickerBehavior(delay)(()=> toRun)
+  def apply(delay:FiniteDuration)(toRun: =>Unit) = new TickerBehavior(delay)(()=> toRun)
 }

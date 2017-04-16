@@ -10,16 +10,11 @@ import akka.actor.ActorRef
  * @param toRun the callback used to run the behavior
  * @param supervisor reference to the actor that use the behavior
  */
-class OneShotBehavior(toRun:() =>Unit)(implicit supervisor:ActorRef) extends AbstractBehavior(toRun) {
+class OneShotBehavior(toRun:() =>Unit) extends AbstractBehavior(toRun) {
 
-  /** run the behavior and then finish*/
-  final override def run = {
-     toRun() 
-     supervisor ! Finished //tell the supervisor we have finished
-  }
 }
 
 object OneShotBehavior {
-  def apply(toRun: =>Unit)(implicit supervisor:ActorRef) = new OneShotBehavior(()=> toRun)
+  def apply(toRun: =>Unit) = new OneShotBehavior(()=> toRun)
   def doNothing = () => {}
 }

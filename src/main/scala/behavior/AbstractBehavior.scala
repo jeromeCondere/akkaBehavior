@@ -15,7 +15,11 @@ case object AskForRun  extends AskMessage
 case object Run extends RequestMessage
 case object Stop extends RequestMessage
 case object Refuse extends RequestMessage
-case object Setup extends RequestMessage
+class Setup(implicit val supervisor: ActorRef) extends RequestMessage {}
+object Setup extends RequestMessage {
+  def apply(implicit supervisor: ActorRef) = new Setup
+  def unapply(s: Setup) = Some(s.supervisor)
+}
 case object Poke extends RequestMessage
 //Inform message
 case object Finished extends InformMessage
@@ -40,8 +44,10 @@ case object Void extends BehaviorData
  * @param toRun the callback used to run the behavior
  * @param supervisor reference to the actor that use the behavior
  */
-abstract class AbstractBehavior(toRun:() => Unit)(implicit supervisor:ActorRef) extends FSM[BehaviorState,BehaviorData]{
-  private[this] var isInit = false 
+abstract class AbstractBehavior(toRun:() => Unit) extends FSM[BehaviorState,BehaviorData]{
+  private[this] var isInit = false
+  private var supervisor :ActorRef  = _
+  
   /** 
    *  initialize the behavior <br>
    *  override this method when extending this class
@@ -58,11 +64,14 @@ abstract class AbstractBehavior(toRun:() => Unit)(implicit supervisor:ActorRef) 
   
   when(Idle)
   {
-     case Event(Setup,_) => init
-                            goto(Ready) 
+     case  Event(s :Setup,_) => supervisor = s.supervisor
+                               println(supervisor)
+                               init
+                               goto(Ready) 
      case Event(Stop, _) => self ! Poke
                             goto(Killed)
-     case _ => stay() 
+     case a: Any => println(a)
+                    stay() 
      
   }
 

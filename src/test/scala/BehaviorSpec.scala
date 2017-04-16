@@ -11,7 +11,7 @@ class BehaviorSpec extends TestKit(ActorSystem("MySpec")) with ImplicitSender
  
 // the supervisor is the implicit sender   
 implicit val systemSupervisor = self
-
+println(self)
   "A behavior (general)" must {
   
     "run the code properly" in {
@@ -20,6 +20,8 @@ implicit val systemSupervisor = self
         a = a + 2
       } )
       assert(a==2)
+      
+      println("issou  "+ Setup)
       val be = beRef.underlyingActor
       beRef ! Setup
       beRef ! Run

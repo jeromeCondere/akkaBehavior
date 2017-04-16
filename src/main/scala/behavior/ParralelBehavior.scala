@@ -12,7 +12,7 @@ import scala.reflect._
  * @param toRun the callback used to run the behavior
  * @param supervisor reference to the actor that use the behavior
  */
-class ParralelBehavior[A <: AbstractBehavior : ClassTag](behaviorProxyList:List[BehaviorProxy[A]]) (implicit supervisor:ActorRef) extends AbstractBehavior(() => {}){
+class ParralelBehavior[A <: AbstractBehavior : ClassTag](behaviorProxyList:List[BehaviorProxy[A]]) extends AbstractBehavior(() => {}){
  
   //to do find a way to override init (if not it won't be used in setup)
   /** setup all Behaviors */
@@ -24,7 +24,6 @@ class ParralelBehavior[A <: AbstractBehavior : ClassTag](behaviorProxyList:List[
     }
   }
   
-
   /** run all behavior in the list of behaviors */
   override def run = {
     //send run message to all actors
