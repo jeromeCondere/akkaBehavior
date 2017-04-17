@@ -17,7 +17,7 @@ case object Stop extends RequestMessage
 case object Refuse extends RequestMessage
 class Setup(implicit val supervisor: ActorRef) extends RequestMessage {}
 object Setup extends RequestMessage {
-  def apply(implicit supervisor: ActorRef) = new Setup
+  def apply()(implicit supervisor: ActorRef) = new Setup
   def unapply(s: Setup) = Some(s.supervisor)
 }
 case object Poke extends RequestMessage
@@ -64,13 +64,13 @@ abstract class AbstractBehavior(toRun:() => Unit) extends FSM[BehaviorState,Beha
   
   when(Idle)
   {
-     case  Event(s :Setup,_) => supervisor = s.supervisor
-                               println(supervisor)
+     case  Event(Setup(s),_) => supervisor = s
+                               println("issou")
                                init
                                goto(Ready) 
      case Event(Stop, _) => self ! Poke
                             goto(Killed)
-     case a: Any => println(a)
+     case Event(a : Any, _) => println(a)
                     stay() 
      
   }

@@ -21,9 +21,8 @@ println(self)
       } )
       assert(a==2)
       
-      println("issou  "+ Setup)
       val be = beRef.underlyingActor
-      beRef ! Setup
+      beRef ! Setup()
       beRef ! Run
       awaitCond(a == 4, 50 millis)
      }
@@ -37,7 +36,7 @@ println(self)
       }
       val beRef = TestActorRef (new MyBehavior(doNothing) )
       val be = beRef.underlyingActor
-      beRef ! Setup
+      beRef ! Setup()
       assert(be.a==4)
       awaitCond(be.a == 4, 50 millis)
    
@@ -54,9 +53,9 @@ println(self)
       var beRef = TestActorRef( new MyBehavior(()=>{}) )
       val be = beRef.underlyingActor
       assert(be.b==2)
-      beRef ! Setup
+      beRef ! Setup()
       awaitCond(be.b == 6, 50 millis)
-      beRef ! Setup //setting up twice doesn't change the value
+      beRef ! Setup() //setting up twice doesn't change the value
       awaitCond(be.b == 6, 100 millis)
     }
 }
@@ -70,7 +69,7 @@ println(self)
       a+=3
     })
     
-    beRef ! Setup
+    beRef ! Setup()
     beRef ! Run
     awaitCond(a==5, 190 millis) // we give +90 millis to check if a has been updated
   }
@@ -80,7 +79,7 @@ println(self)
       
     })
     
-    beRef ! Setup
+    beRef ! Setup()
     beRef ! Run
     expectMsg(70 millis,Finished)
   }
@@ -93,7 +92,7 @@ println(self)
     var beRef = TestActorRef(TickerBehavior(50 millis){
       e+=2
     })
-    beRef ! Setup
+    beRef ! Setup()
     beRef ! Run
     // we test every 40 millis if the condition holds
     awaitCond(e==20, 600 millis, 40 millis)
@@ -104,7 +103,7 @@ println(self)
      var beRef = TestActorRef(TickerBehavior(50 millis){
       
     })
-      beRef ! Setup
+      beRef ! Setup()
       beRef ! Run
       beRef ! Stop
       expectMsg(Finished)
@@ -125,13 +124,13 @@ println(self)
     {
       override protected def init = a2+=3
     }
-    //double setup
+    //double Setup()
     val bp1 = BehaviorProxy{new MyBehavior(OneShotBehavior.doNothing)}
     val bp2 = BehaviorProxy{new MyBehavior(OneShotBehavior.doNothing)}
     val listBp = List(bp1,bp2)
     var beRef = TestActorRef(new ParralelBehavior(listBp),"parrallel")
     
-    beRef ! Setup
+    beRef ! Setup()
     awaitCond(a1==6 && a2==9, 300 millis)
     
   }
