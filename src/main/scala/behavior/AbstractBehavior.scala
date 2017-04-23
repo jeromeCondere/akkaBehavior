@@ -65,13 +65,11 @@ abstract class AbstractBehavior(toRun:() => Unit) extends FSM[BehaviorState,Beha
   when(Idle)
   {
      case  Event(Setup(s),_) => supervisor = s
-                               println("issou")
                                init
                                goto(Ready) 
      case Event(Stop, _) => self ! Poke
                             goto(Killed)
-     case Event(a : Any, _) => println(a)
-                    stay() 
+     case _ =>              stay() 
      
   }
 
