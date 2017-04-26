@@ -125,7 +125,7 @@ implicit val systemSupervisor = self
     val bp1 = BehaviorProxy[OneShotBehavior]{new MyBehavior(doNothing())}
     val bp2 = BehaviorProxy[OneShotBehavior]{new MyBehaviorBis(doNothing())}
     val listBp = List(bp1,bp2)
-    var beRef = TestActorRef(new ParralelBehavior(listBp),"parrallel")
+    var beRef = TestActorRef(new ParralelBehavior(listBp),"parrallelBehavior")
     
     beRef ! Setup()
     awaitCond(a1==6 && a2==9, 300 millis)
@@ -145,7 +145,7 @@ implicit val systemSupervisor = self
       a2+=4    
     }}
     val listBp = List(bp1,bp2)
-    var beRef = TestActorRef(new ParralelBehavior(listBp),"parrallel")
+    var beRef = TestActorRef(new ParralelBehavior(listBp),"parrallelBehavior")
     
     beRef ! Setup()
     beRef ! Run

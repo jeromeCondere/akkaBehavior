@@ -14,11 +14,10 @@ import scala.reflect._
  */
 class ParralelBehavior[A <: AbstractBehavior : ClassTag](behaviorProxyList:List[BehaviorProxy[A]]) extends AbstractBehavior(() => {}){
  
-  //to do find a way to override init (if not it won't be used in setup)
   /** setup all Behaviors */
   override final protected def init = {
    behaviorProxyList.zipWithIndex.foreach{
-      case(behaviorProxy,index) => val actor = context.actorOf(Props(behaviorProxy.behavior()), self.path.name +"parallel_behavior_"+index )
+      case(behaviorProxy,index) => val actor = context.actorOf(Props(behaviorProxy.behavior()), self.path.name +"parallel_behavior_"+ index )
                                    context.watch(actor)
                                    actor ! Setup() 
     }

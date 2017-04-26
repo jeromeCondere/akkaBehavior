@@ -15,7 +15,7 @@ class TimerBehavior(delay:FiniteDuration)(toRun:() => Unit) extends AbstractBeha
 
   override final def run() =
   {
-    val system=context.system
+    val system = context.system
     import system.dispatcher
     system.scheduler.scheduleOnce(delay){ 
       toRun() 
