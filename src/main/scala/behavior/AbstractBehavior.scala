@@ -36,6 +36,9 @@ case object Killed extends BehaviorState
 
 sealed trait BehaviorData
 case object Void extends BehaviorData
+object doNothing {
+  def apply() = () => {}
+}
 
 /**
  * Abstract Behavior <br>

@@ -20,7 +20,7 @@ class ParralelBehavior[A <: AbstractBehavior : ClassTag](behaviorProxyList:List[
    behaviorProxyList.zipWithIndex.foreach{
       case(behaviorProxy,index) => val actor = context.actorOf(Props(behaviorProxy.behavior()), self.path.name +"parallel"+index )
                               context.watch(actor)
-                              actor ! Setup 
+                              actor ! Setup() 
     }
   }
   

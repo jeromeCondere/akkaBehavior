@@ -1,6 +1,5 @@
 import org.scalatest._
 import behavior._
-import behavior.OneShotBehavior.doNothing
 import behavior.proxy.BehaviorProxy
 import akka.actor._
 import akka.testkit._

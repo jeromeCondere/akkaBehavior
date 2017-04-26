@@ -1,7 +1,6 @@
 import org.scalatest._
 import behavior._
 import behavior.proxy.BehaviorProxy
-import behavior.OneShotBehavior.doNothing
 import akka.actor._
 import akka.testkit._
 import scala.concurrent.duration._
@@ -33,7 +32,7 @@ implicit val systemSupervisor = self
         var a =2
         override protected def init = a+=2
       }
-      val beRef = TestActorRef (new MyBehavior(doNothing) )
+      val beRef = TestActorRef (new MyBehavior(doNothing()) )
       val be = beRef.underlyingActor
       beRef ! Setup()
       assert(be.a==4)
@@ -116,23 +115,21 @@ implicit val systemSupervisor = self
     var a2 = 6
     class MyBehavior(toRun:() =>Unit) extends OneShotBehavior(toRun)
     {
-      override protected def init = { a1+=2; print(a1+" ")}
+      override protected def init = { a1+=2; println("a1 "+ a1)}
        
     }
     class MyBehaviorBis(toRun:() =>Unit) extends OneShotBehavior(toRun)
     {
-      override protected def init = a2+=3
+      override protected def init = {a2+=3; println("a2 "+a2)}
     }
-    //double Setup()
-    val bp1 = BehaviorProxy{new MyBehavior(OneShotBehavior.doNothing)}
-    val bp2 = BehaviorProxy{new MyBehavior(OneShotBehavior.doNothing)}
+  
+    val bp1 = BehaviorProxy[OneShotBehavior]{new MyBehavior(doNothing())}
+    val bp2 = BehaviorProxy[OneShotBehavior]{new MyBehaviorBis(doNothing())}
     val listBp = List(bp1,bp2)
     var beRef = TestActorRef(new ParralelBehavior(listBp),"parrallel")
     
     beRef ! Setup()
     awaitCond(a1==6 && a2==9, 300 millis)
-    println("a1 "+a1)
-    println("a2 "+a2)
     
   }
   

@@ -16,5 +16,4 @@ class OneShotBehavior(toRun:() =>Unit) extends AbstractBehavior(toRun) {
 
 object OneShotBehavior {
   def apply(toRun: =>Unit) = new OneShotBehavior(()=> toRun)
-  def doNothing = () => {}
 }
