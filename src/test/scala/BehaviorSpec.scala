@@ -142,7 +142,7 @@ implicit val systemSupervisor = self
       a2+=4    
     }}
     val listBp = List(bp1,bp2)
-    var beRef = TestActorRef(new ParralelBehavior(listBp),"parrallelBehavior")
+    var beRef = TestActorRef(new ParralelBehavior(listBp),"parrallelBehavior2")
     
     beRef ! Setup()
     beRef ! Run
