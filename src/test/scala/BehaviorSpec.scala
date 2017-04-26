@@ -61,7 +61,6 @@ implicit val systemSupervisor = self
 "A TimerBehavior" must {
   
   "execute after a determinded duration" in {
-    case object Okay
     var a =2
     var beRef = TestActorRef(TimerBehavior(100 millis){
       a+=3
@@ -115,12 +114,12 @@ implicit val systemSupervisor = self
     var a2 = 6
     class MyBehavior(toRun:() =>Unit) extends OneShotBehavior(toRun)
     {
-      override protected def init = { a1+=2; println("a1 "+ a1)}
+      override protected def init = a1+=2
        
     }
     class MyBehaviorBis(toRun:() =>Unit) extends OneShotBehavior(toRun)
     {
-      override protected def init = {a2+=3; println("a2 "+a2)}
+      override protected def init = a2+=3
     }
   
     val bp1 = BehaviorProxy[OneShotBehavior]{new MyBehavior(doNothing())}
@@ -134,7 +133,23 @@ implicit val systemSupervisor = self
   }
   
   "launch several behaviors asynchronously" in {
-    fail
+    var a1 = 7
+    var a2 = 9
+    val bp1 = BehaviorProxy{OneShotBehavior{
+      a1+=3
+      a2+=1    
+    }}
+
+    val bp2 = BehaviorProxy{OneShotBehavior{
+      a1+=7
+      a2+=4    
+    }}
+    val listBp = List(bp1,bp2)
+    var beRef = TestActorRef(new ParralelBehavior(listBp),"parrallel")
+    
+    beRef ! Setup()
+    beRef ! Run
+    awaitCond(a1==17 && a2==14, 300 millis)
   }
   
   "receive a Finished message from every agent stopped"  in {
