@@ -79,8 +79,7 @@ implicit val systemSupervisor = self
     beRef ! Setup()
     beRef ! Run
     expectMsg(70 millis,Finished)
-  }
-  
+  } 
 }
 
 "A TickerBehavior" must {
@@ -94,7 +93,6 @@ implicit val systemSupervisor = self
     // we test every 40 millis if the condition holds
     awaitCond(e==20, 600 millis, 40 millis)
     beRef ! Stop
-    
   }
     "send a Finished message after death to supervisor"  in {
      var beRef = TestActorRef(TickerBehavior(50 millis){
@@ -129,7 +127,6 @@ implicit val systemSupervisor = self
     
     beRef ! Setup()
     awaitCond(a1==6 && a2==9, 300 millis)
-    
   }
   
   "launch several behaviors asynchronously" in {
@@ -154,10 +151,7 @@ implicit val systemSupervisor = self
   
   "receive a Finished message from every agent stopped"  in {
     fail
-  }
-  
+  }  
 }
-
-
 
 }
