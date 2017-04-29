@@ -150,7 +150,25 @@ implicit val systemSupervisor = self
   }
   
   "receive a Finished message from every agent stopped"  in {
-    fail
+    val bp1 = BehaviorProxy{OneShotBehavior{
+      var a = 1  
+      for ( i<-1 to 10000)
+            a+=45
+    }}
+
+    val bp2 = BehaviorProxy{OneShotBehavior{
+      var a = 1 
+      for ( i<-1 to 10000)
+            for ( j<-1 to 10000)
+              a+=25
+    }}
+    val listBp = List(bp1,bp2)
+    var beRef = TestActorRef(new ParralelBehavior(listBp),"parrallelBehavior3")
+    
+    beRef ! Setup()
+    beRef ! Run
+    expectMsg(Finished)
+
   }  
 }
 
