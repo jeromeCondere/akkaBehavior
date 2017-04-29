@@ -14,20 +14,47 @@ import scala.reflect._
  */
 class ParralelBehavior[A <: AbstractBehavior : ClassTag](behaviorProxyList:List[BehaviorProxy[A]]) extends AbstractBehavior(() => {}){
  
+  case class info(val name : String, isFinished: Boolean)
+  private var behaviorsInfo: List[info]   = List()
+  
+  //var behaviorInfo : InfoData[]
   /** setup all Behaviors */
   override final protected def init = {
    behaviorProxyList.zipWithIndex.foreach{
-      case(behaviorProxy,index) => val actor = context.actorOf(Props(behaviorProxy.behavior()), self.path.name +"parallel_behavior_"+ index )
+      case(behaviorProxy,index) => val name = self.path.name +"_parallel_behavior_"+ index
+                                   val actor = context.actorOf(Props(behaviorProxy.behavior()),name )
                                    context.watch(actor)
+                                   behaviorsInfo = info(name, false)::behaviorsInfo
                                    actor ! Setup()
     }
   }
   
   /** run all behavior in the list of behaviors */
   override def run = {
-    //send run message to all actors
-   context.children.foreach{
-     behavior => behavior ! Run
-   }
+    self ! ComplexRun
   }
+  
+  def complexRun = {
+     context.children.foreach { 
+       behavior => behavior ! Run
+     }
+   }
+  
+  when(ComplexRunning)
+  {
+    case Event(ComplexRun, _) => complexRun
+                                  stay()
+    
+    case Event(Finished, _) => if(!behaviorsInfo.isEmpty) {
+                                 val name = "" //obtenir le nom du sender
+                                 behaviorsInfo = behaviorsInfo.filter { info => info.name == name}
+                                 stay()
+                               } else {
+                                 self ! Poke
+                                 goto(Ended)
+                               }
+                               
+    case _ => stay()
+  }
+  
 }

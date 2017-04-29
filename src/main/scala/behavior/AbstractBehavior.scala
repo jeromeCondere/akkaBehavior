@@ -13,6 +13,7 @@ case object AskForStop  extends AskMessage
 case object AskForRun  extends AskMessage
 //Request messages
 case object Run extends RequestMessage
+case object ComplexRun extends RequestMessage
 case object Stop extends RequestMessage
 case object Refuse extends RequestMessage
 class Setup(implicit val supervisor: ActorRef) extends RequestMessage {}
@@ -28,6 +29,7 @@ sealed trait BehaviorState
 case object Idle extends BehaviorState
 case object Ready extends BehaviorState
 case object Running extends BehaviorState
+case object ComplexRunning extends BehaviorState
 case object FinishedRun extends BehaviorState
 case object Ended extends BehaviorState
 case object Waiting extends BehaviorState
@@ -36,6 +38,7 @@ case object Killed extends BehaviorState
 
 sealed trait BehaviorData
 case object Void extends BehaviorData
+case class ComplexData[A](val info: A)
 object doNothing {
   def apply() = () => {}
 }
@@ -80,6 +83,7 @@ abstract class AbstractBehavior(toRun:() => Unit) extends FSM[BehaviorState,Beha
   {
      case Event(Run, _) => run
                            goto(Running) 
+                           
      case Event(Stop, _) => self ! Poke
                             goto(Killed)
      case _ => stay() 
@@ -88,6 +92,9 @@ abstract class AbstractBehavior(toRun:() => Unit) extends FSM[BehaviorState,Beha
   
   when(Running)
   {
+     case Event(ComplexRun, _) => self ! ComplexRun
+                                  goto(ComplexRunning)
+                                  
      case Event(FinishedRun, _) => self ! Poke
                                    goto(Ended) 
      case Event(Stop, Void) => goto(Killed)
