@@ -112,7 +112,7 @@ abstract class AbstractBehavior(toRun:() => Unit) extends FSM[BehaviorState,Beha
     case Event(Stop, _) => log.info("stopping behavior "+ self.path.name)
                            self ! Poke
                            goto(Killed)
-    case x: Any => stay() 
+    case _ => stay() 
 
   }
   override def toString = "behavior: "+self.path.name+"\n state: "+stateName + "\n supervisor: "+ supervisor
