@@ -17,7 +17,7 @@ implicit val systemSupervisor = self
       var a = 2
       val beRef = TestActorRef(OneShotBehavior{
         a = a + 2
-      } )
+      } , "runBehavior")
       assert(a==2)
       
       beRef ! Setup()
@@ -32,7 +32,7 @@ implicit val systemSupervisor = self
         var a =2
         override protected def init = a+=2
       }
-      val beRef = TestActorRef (new MyBehavior(doNothing()) )
+      val beRef = TestActorRef (new MyBehavior(doNothing()), "initBehavior" )
       val be = beRef.underlyingActor
       beRef ! Setup()
       assert(be.a==4)
@@ -48,7 +48,7 @@ implicit val systemSupervisor = self
         override protected def init = b+=4
       }
 
-      var beRef = TestActorRef( new MyBehavior(()=>{}) )
+      var beRef = TestActorRef( new MyBehavior(()=>{}) , "initBehavior2")
       val be = beRef.underlyingActor
       assert(be.b==2)
       beRef ! Setup()
@@ -74,7 +74,7 @@ implicit val systemSupervisor = self
   "send a Finished message after death to supervisor"  in {
     var beRef = TestActorRef(TimerBehavior(50 millis){
       
-    })
+    }, "finishBehavior")
     
     beRef ! Setup()
     beRef ! Run
@@ -87,7 +87,7 @@ implicit val systemSupervisor = self
     var e = 0
     var beRef = TestActorRef(TickerBehavior(50 millis){
       e+=2
-    })
+    }, "tickerBehavior")
     beRef ! Setup()
     beRef ! Run
     // we test every 40 millis if the condition holds
@@ -97,7 +97,7 @@ implicit val systemSupervisor = self
     "send a Finished message after death to supervisor"  in {
      var beRef = TestActorRef(TickerBehavior(50 millis){
       
-    })
+    },"finishTickerBehavior")
       beRef ! Setup()
       beRef ! Run
       beRef ! Stop
@@ -159,7 +159,7 @@ implicit val systemSupervisor = self
     val bp2 = BehaviorProxy{OneShotBehavior{
       var a = 1 
       for ( i<-1 to 10000)
-            for ( j<-1 to 10000)
+            for ( j<-1 to 1000)
               a+=25
     }}
     val listBp = List(bp1,bp2)

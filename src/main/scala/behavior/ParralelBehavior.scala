@@ -35,8 +35,10 @@ class ParralelBehavior[A <: AbstractBehavior : ClassTag](behaviorProxyList:List[
   }
   
   def complexRun = {
+    println(self)
      context.children.foreach { 
        behavior => behavior ! Run
+                   behavior ! Show
      }
    }
   
@@ -46,9 +48,14 @@ class ParralelBehavior[A <: AbstractBehavior : ClassTag](behaviorProxyList:List[
                                   stay()
     
     case Event(Finished, _) => if(!behaviorsInfo.isEmpty) {
-                                 val name = "" //obtenir le nom du sender
-                                 behaviorsInfo = behaviorsInfo.filter { info => info.name == name}
+                                 val name = sender.path.name //obtenir le nom du sender
+                                 behaviorsInfo = behaviorsInfo.filter { info => info.name != name}
+                                 if(behaviorsInfo.isEmpty) {
+                                   self ! Poke
+                                   goto(Ended)
+                                 }
                                  stay()
+                                 
                                } else {
                                  self ! Poke
                                  goto(Ended)

@@ -16,6 +16,7 @@ case object Run extends RequestMessage
 case object ComplexRun extends RequestMessage
 case object Stop extends RequestMessage
 case object Refuse extends RequestMessage
+case object Show extends RequestMessage
 class Setup(implicit val supervisor: ActorRef) extends RequestMessage {}
 object Setup extends RequestMessage {
   def apply()(implicit supervisor: ActorRef) = new Setup
@@ -24,6 +25,7 @@ object Setup extends RequestMessage {
 case object Poke extends RequestMessage
 //Inform message
 case object Finished extends InformMessage
+case object Dead extends InformMessage
 
 sealed trait BehaviorState
 case object Idle extends BehaviorState
@@ -72,22 +74,13 @@ abstract class AbstractBehavior(toRun:() => Unit) extends FSM[BehaviorState,Beha
   {
      case  Event(Setup(s),_) => supervisor = s
                                init
-                               goto(Ready) 
-     case Event(Stop, _) => self ! Poke
-                            goto(Killed)
-     case _ =>              stay() 
-     
+                               goto(Ready)  
   }
 
   when(Ready)
   {
      case Event(Run, _) => run
                            goto(Running) 
-                           
-     case Event(Stop, _) => self ! Poke
-                            goto(Killed)
-     case _ => stay() 
-     
   }
   
   when(Running)
@@ -97,8 +90,6 @@ abstract class AbstractBehavior(toRun:() => Unit) extends FSM[BehaviorState,Beha
                                   
      case Event(FinishedRun, _) => self ! Poke
                                    goto(Ended) 
-     case Event(Stop, Void) => goto(Killed)
-     case _ => stay() 
   }
   
   when(Ended)
@@ -109,8 +100,22 @@ abstract class AbstractBehavior(toRun:() => Unit) extends FSM[BehaviorState,Beha
    
   when(Killed)
   {
-     case _ => stop()
+     case _ => supervisor ! Dead
+               stop()
   }
+  
+  whenUnhandled 
+  {
+    case Event(Show, _) => log.info("\n"+toString)
+                           stay
+                           
+    case Event(Stop, _) => log.info("stopping behavior "+ self.path.name)
+                           self ! Poke
+                           goto(Killed)
+    case x: Any => stay() 
+
+  }
+  override def toString = "behavior: "+self.path.name+"\n state: "+stateName + "\n supervisor: "+ supervisor
   
    
 }
