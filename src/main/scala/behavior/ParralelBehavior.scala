@@ -38,7 +38,7 @@ class ParralelBehavior[A <: AbstractBehavior : ClassTag](behaviorProxyList:List[
     println(self)
      context.children.foreach { 
        behavior => behavior ! Run
-                   behavior ! Show
+                   
      }
    }
   
