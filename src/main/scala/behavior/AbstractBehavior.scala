@@ -73,8 +73,8 @@ abstract class AbstractBehavior(toRun:() => Unit) extends FSM[BehaviorState,Beha
   when(Idle)
   {
      case  Event(Setup(s),_) => supervisor = s
-                               init
-                               goto(Ready)  
+                                init
+                                goto(Ready)  
   }
 
   when(Ready)
@@ -101,6 +101,7 @@ abstract class AbstractBehavior(toRun:() => Unit) extends FSM[BehaviorState,Beha
   when(Killed)
   {
      case _ => supervisor ! Dead
+               println(supervisor)
                stop()
   }
   

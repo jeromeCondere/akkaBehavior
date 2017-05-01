@@ -10,21 +10,26 @@ class BehaviorSpec extends TestKit(ActorSystem("MySpec")) with ImplicitSender
  
 // the supervisor is the implicit sender   
 implicit val systemSupervisor = self
+println(self)
 
+  override def afterAll {
+    TestKit.shutdownActorSystem(system)
+  }
   "A behavior (general)" must {
   
     "run the code properly" in {
       var a = 2
-      val beRef = TestActorRef(OneShotBehavior{
+      val beRef = system.actorOf(Props(OneShotBehavior{
         a = a + 2
-      } , "runBehavior")
+      } ), "runBehavior")
       assert(a==2)
       
       beRef ! Setup()
       beRef ! Run
       awaitCond(a == 4, 50 millis)
+      expectMsg(Finished)
      }
-    
+     
    "init properly" in {
       class MyBehavior(toRun:() =>Unit) extends OneShotBehavior(toRun)
       {
@@ -37,6 +42,7 @@ implicit val systemSupervisor = self
       beRef ! Setup()
       assert(be.a==4)
       awaitCond(be.a == 4, 50 millis)
+      expectNoMsg(150 millis)
    
   }
    
@@ -69,17 +75,8 @@ implicit val systemSupervisor = self
     beRef ! Setup()
     beRef ! Run
     awaitCond(a==5, 190 millis) // we give +90 millis to check if a has been updated
+    expectMsg(Finished)
   }
-  
-  "send a Finished message after death to supervisor"  in {
-    var beRef = TestActorRef(TimerBehavior(50 millis){
-      
-    }, "finishBehavior")
-    
-    beRef ! Setup()
-    beRef ! Run
-    expectMsg(70 millis,Finished)
-  } 
 }
 
 "A TickerBehavior" must {
@@ -93,17 +90,19 @@ implicit val systemSupervisor = self
     // we test every 40 millis if the condition holds
     awaitCond(e==20, 600 millis, 40 millis)
     beRef ! Stop
+    expectMsg(Dead)
   }
-    "send a Finished message after death to supervisor"  in {
+    "send a Dead message after death to supervisor"  in {
      var beRef = TestActorRef(TickerBehavior(50 millis){
       
-    },"finishTickerBehavior")
+    },"deadTickerBehavior")
       beRef ! Setup()
       beRef ! Run
       beRef ! Stop
-      expectMsg(Finished)
+      expectMsg(Dead)
   }
 }
+//TODO: Add finished Test for tickerBehavior
 
 "A ParallelBehavior" must {
   
@@ -147,28 +146,28 @@ implicit val systemSupervisor = self
     beRef ! Setup()
     beRef ! Run
     awaitCond(a1==17 && a2==14, 300 millis)
+    expectMsg(Finished)
   }
   
   "receive a Finished message from every agent stopped"  in {
+    case class subMessage(a: Int)
+    
     val bp1 = BehaviorProxy{OneShotBehavior{
       var a = 1  
-      for ( i<-1 to 10000)
+      for ( i<-1 to 100)
             a+=45
     }}
 
     val bp2 = BehaviorProxy{OneShotBehavior{
       var a = 1 
-      for ( i<-1 to 10000)
-            for ( j<-1 to 1000)
-              a+=25
     }}
     val listBp = List(bp1,bp2)
     var beRef = TestActorRef(new ParralelBehavior(listBp),"parrallelBehavior3")
     
     beRef ! Setup()
     beRef ! Run
+    
     expectMsg(Finished)
-
   }  
 }
 
