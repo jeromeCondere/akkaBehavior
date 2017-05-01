@@ -26,10 +26,9 @@ class TickerBehavior (period:FiniteDuration)(toRun:() => Unit) extends  Abstract
           if(stopTicker == false)
             {
               toRun() 
-              self ! FinishedRun
             }
           else
-            self ! Stop 
+            self ! FinishedRun
       } 
       isStarted = true
     }
