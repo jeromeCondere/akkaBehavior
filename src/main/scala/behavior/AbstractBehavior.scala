@@ -116,9 +116,7 @@ abstract class AbstractBehavior(toRun:() => Unit) extends FSM[BehaviorState,Beha
 
   }
   override def toString = "behavior: "+self.path.name+"\n state: "+stateName + "\n supervisor: "+ supervisor
-  
-  override def postStop { log.debug("actor "+self.path+ " stopped") }
-   
+     
 }
  
 
