@@ -9,24 +9,34 @@ There are several types of behaviors:
 * TickerBehavior (behavior that is executed repeatedly)
 * ParallelBehavior (behavior that execute several behaviors asynchronously)
 
+Every behavior is monitored by a *supervisor* Actor.  
+Before Ending the behavior passes throught several state that are *Idle*, *Running* (or *ComplexRunning*), *FinishedRun* and *Ended*.  
+If you want to stop you shall send it a Stop Message therefore it will go directly to the state Killed.  
+When the behavior is Ended it sends a message Finished to its supervisor.  
+If the behavior is Killed it sends a message Dead to its supervisor.  
+
 ## simple Usage
-You shall use those behavior by two ways:
+You shall use those behavior by two ways:  
 * Using the class constructor or by derivated classes
 * Throught the companion object (*apply* method)
 
 ## Complex Usage
 It is possible to create user-defined behaviors.  
+The user must define a class that extends the ComplexBehavior
 To do that you must go to ComplexRunning state.  
 Example:  
 
 ```scala
-class MyComplexBehavior extends AbstractBehavior(() => {}){
+class MyComplexBehavior extends ComplexBehavior(toRun:() =>Unit){
  
   
   override final protected def init = {}
   
   def complexRun = {
-     // TODO: userde
+     // TODO: user definet
+     toRun()
+     println("---------")
+     toRun()
    }
   
   when(ComplexRunning)
