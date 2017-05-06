@@ -12,7 +12,7 @@ import scala.reflect._
  * @param toRun the callback used to run the behavior
  * @param supervisor reference to the actor that use the behavior
  */
-class ParralelBehavior[A <: AbstractBehavior : ClassTag](behaviorProxyList:List[BehaviorProxy[A]]) extends AbstractBehavior(() => {}){
+class ParralelBehavior[A <: AbstractBehavior : ClassTag](behaviorProxyList:List[BehaviorProxy[A]]) extends ComplexBehavior(() => {}){
  
   private var behaviorsNotFinished: List[String]   = List()
   
@@ -25,11 +25,6 @@ class ParralelBehavior[A <: AbstractBehavior : ClassTag](behaviorProxyList:List[
                                    behaviorsNotFinished = name::behaviorsNotFinished
                                    actor ! Setup()
     }
-  }
-  
-  /** run all behavior in the list of behaviors */
-  override def run = {
-    self ! ComplexRun
   }
   
   def complexRun = {
@@ -60,6 +55,7 @@ class ParralelBehavior[A <: AbstractBehavior : ClassTag](behaviorProxyList:List[
 
   }
 }
+
 /** ParralelBehavior (a behavior that runs a list of behaviors asynchronously)*/
 object ParralelBehavior {
   def apply[A <: AbstractBehavior : ClassTag](behaviorProxyList:List[BehaviorProxy[A]]) = new ParralelBehavior(behaviorProxyList)

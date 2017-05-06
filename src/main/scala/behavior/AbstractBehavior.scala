@@ -15,7 +15,6 @@ case object AskForRun  extends AskMessage
 case object Run extends RequestMessage
 case object ComplexRun extends RequestMessage
 case object Stop extends RequestMessage
-case object Refuse extends RequestMessage
 case object Show extends RequestMessage
 class Setup(implicit val supervisor: ActorRef) extends RequestMessage {}
 object Setup extends RequestMessage {
