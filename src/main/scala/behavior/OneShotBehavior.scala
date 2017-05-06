@@ -1,7 +1,6 @@
 package behavior
 import akka.actor.ActorRef
 
-
 /**
  * OneShotBehavior <br>
  * A behavior that run only once and when finished send a Finished message to its supervisor
@@ -14,6 +13,7 @@ class OneShotBehavior(toRun:() =>Unit) extends AbstractBehavior(toRun) {
 
 }
 
+/** One shot behavior object (A behavior that run only once)*/
 object OneShotBehavior {
   def apply(toRun: =>Unit) = new OneShotBehavior(() => toRun)
 }

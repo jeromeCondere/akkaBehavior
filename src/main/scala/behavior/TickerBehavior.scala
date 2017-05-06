@@ -12,7 +12,6 @@ import akka.actor.ActorRef
  * @param period amount of time between two runs
  */
 class TickerBehavior (period:FiniteDuration)(toRun:() => Unit) extends  AbstractBehavior(toRun){
-  //TODO rajouter un paramètre d'initial delay
   
   //once the behavior finished to run it ask for run again
   private[this] var isStarted = false
@@ -34,7 +33,7 @@ class TickerBehavior (period:FiniteDuration)(toRun:() => Unit) extends  Abstract
     }
     
   }
-  /**this method retun true to finish the behavior*/
+  /** ending condition to finish the behavior*/
   protected def stopTicker:Boolean = {false}
 }
 

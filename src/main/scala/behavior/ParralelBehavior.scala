@@ -14,17 +14,15 @@ import scala.reflect._
  */
 class ParralelBehavior[A <: AbstractBehavior : ClassTag](behaviorProxyList:List[BehaviorProxy[A]]) extends AbstractBehavior(() => {}){
  
-  case class info(val name : String, isFinished: Boolean)
-  private var behaviorsInfo: List[info]   = List()
+  private var behaviorsNotFinished: List[String]   = List()
   
-  //var behaviorInfo : InfoData[]
   /** setup all Behaviors */
   override final protected def init = {
    behaviorProxyList.zipWithIndex.foreach{
       case(behaviorProxy,index) => val name = self.path.name +"_parallel_behavior_"+ index
                                    val actor = context.actorOf(Props(behaviorProxy.behavior()),name )
                                    context.watch(actor)
-                                   behaviorsInfo = info(name, false)::behaviorsInfo
+                                   behaviorsNotFinished = name::behaviorsNotFinished
                                    actor ! Setup()
     }
   }
@@ -43,28 +41,26 @@ class ParralelBehavior[A <: AbstractBehavior : ClassTag](behaviorProxyList:List[
   when(ComplexRunning)
   {
     case Event(ComplexRun, _) => complexRun
-                                  stay()
+                                  stay
     
-    case Event(Finished, _) => if(!behaviorsInfo.isEmpty) {
-                                 println("finished message: "+ sender)
-                                 val name = sender.path.name //obtenir le nom du sender
-                                 behaviorsInfo = behaviorsInfo.filter { info => info.name != name}
-                                
+    case Event(Finished, _) => if(!behaviorsNotFinished.isEmpty) {
+                                 val behaviorName = sender.path.name
+                                 behaviorsNotFinished = behaviorsNotFinished.filter { name => name != behaviorName}
 
-                                 if(behaviorsInfo.isEmpty) 
+                                 if(behaviorsNotFinished.isEmpty) 
                                    self ! FinishedRun
-
-                                 stay()
-                                 
+                                 stay
                                } 
                                else 
                                  self ! FinishedRun
-                                 stay()
+                                 stay
 
-    
     case Event(FinishedRun, _) => self ! Poke
-                                   goto(Ended) 
+                                  goto(Ended) 
 
   }
-  
+}
+/** ParralelBehavior (a behavior that runs a list of behaviors asynchronously)*/
+object ParralelBehavior {
+  def apply[A <: AbstractBehavior : ClassTag](behaviorProxyList:List[BehaviorProxy[A]]) = new ParralelBehavior(behaviorProxyList)
 }

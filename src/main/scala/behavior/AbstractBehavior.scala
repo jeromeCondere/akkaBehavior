@@ -59,7 +59,7 @@ abstract class AbstractBehavior(toRun:() => Unit) extends FSM[BehaviorState,Beha
   /** 
    *  initialize the behavior <br>
    *  override this method when extending this class
-   *  */
+   **/
   protected def init = {}
   
   /** run the behavior */
@@ -101,7 +101,6 @@ abstract class AbstractBehavior(toRun:() => Unit) extends FSM[BehaviorState,Beha
   when(Killed)
   {
      case _ => supervisor ! Dead
-               println(supervisor)
                stop()
   }
   
@@ -110,7 +109,7 @@ abstract class AbstractBehavior(toRun:() => Unit) extends FSM[BehaviorState,Beha
     case Event(Show, _) => log.info("\n"+toString)
                            stay
                            
-    case Event(Stop, _) => log.info("stopping behavior "+ self.path.name)
+    case Event(Stop, _) => log.debug("stopping behavior "+ self.path.name)
                            self ! Poke
                            goto(Killed)
     case _ => stay() 
@@ -118,6 +117,7 @@ abstract class AbstractBehavior(toRun:() => Unit) extends FSM[BehaviorState,Beha
   }
   override def toString = "behavior: "+self.path.name+"\n state: "+stateName + "\n supervisor: "+ supervisor
   
+  override def postStop { log.debug("actor "+self.path+ " stopped") }
    
 }
  

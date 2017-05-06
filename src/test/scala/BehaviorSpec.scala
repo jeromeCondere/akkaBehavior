@@ -10,7 +10,6 @@ class BehaviorSpec extends TestKit(ActorSystem("MySpec")) with ImplicitSender
  
 // the supervisor is the implicit sender   
 implicit val systemSupervisor = self
-println(self)
 
   override def afterAll {
     TestKit.shutdownActorSystem(system)
@@ -142,7 +141,7 @@ println(self)
     var beRef = TestActorRef(new ParralelBehavior(listBp),"parrallelBehavior")
     
     beRef ! Setup()
-    awaitCond(a1==6 && a2==9, 1 seconds)
+    awaitCond(a1==6 && a2==9, 2 seconds)
   }
   
   "launch several behaviors asynchronously" in {
@@ -158,11 +157,11 @@ println(self)
       a2+=4    
     }}
     val listBp = List(bp1,bp2)
-    var beRef = TestActorRef(new ParralelBehavior(listBp),"parrallelBehavior2")
+    var beRef = TestActorRef(ParralelBehavior(listBp),"parrallelBehavior2")
     
     beRef ! Setup()
     beRef ! Run
-    awaitCond(a1==17 && a2==14, 1 seconds)
+    awaitCond(a1==17 && a2==14, 2 seconds)
     expectMsg(Finished)
   }
   
@@ -178,7 +177,7 @@ println(self)
       var a = 1 
     }}
     val listBp = List(bp1,bp2)
-    var beRef = TestActorRef(new ParralelBehavior(listBp),"parrallelBehavior3")
+    var beRef = TestActorRef(ParralelBehavior(listBp),"parrallelBehavior3")
     
     beRef ! Setup()
     beRef ! Run
