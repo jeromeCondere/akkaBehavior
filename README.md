@@ -9,7 +9,7 @@ There are several types of behaviors:
 * TickerBehavior (behavior that is executed repeatedly)
 * ParallelBehavior (behavior that execute several behaviors asynchronously)
 
-Every behavior is monitored by a *supervisor* Actor.  
+Every behavior is monitored by a **supervisor** Actor.  
 Before Ending the behavior passes throught several state that are *Idle*, *Running* (or *ComplexRunning*), *FinishedRun* and *Ended*.  
 If you want to stop you shall send it a Stop Message therefore it will go directly to the state Killed.  
 When the behavior is Ended it sends a message Finished to its supervisor.  
