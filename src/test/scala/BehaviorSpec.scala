@@ -15,6 +15,7 @@ println(self)
   override def afterAll {
     TestKit.shutdownActorSystem(system)
   }
+
   "A behavior (general)" must {
   
     "run the code properly" in {
@@ -26,7 +27,7 @@ println(self)
       
       beRef ! Setup()
       beRef ! Run
-      awaitCond(a == 4, 50 millis)
+      awaitCond(a == 4, 70 millis)
       expectMsg(Finished)
      }
      
@@ -41,9 +42,8 @@ println(self)
       val be = beRef.underlyingActor
       beRef ! Setup()
       assert(be.a==4)
-      awaitCond(be.a == 4, 50 millis)
+      awaitCond(be.a == 4, 70 millis)
       expectNoMsg(150 millis)
-   
   }
    
    "init only once" in {
@@ -88,11 +88,11 @@ println(self)
     beRef ! Setup()
     beRef ! Run
     // we test every 40 millis if the condition holds
-    awaitCond(e==20, 600 millis, 40 millis)
+    awaitCond(e==20, 1 seconds, 40 millis)
     beRef ! Stop
     expectMsg(Dead)
   }
-    "send a Dead message after death to supervisor"  in {
+   "send a Dead message after death to supervisor"  in {
      var beRef = TestActorRef(TickerBehavior(50 millis){
       
     },"deadTickerBehavior")
@@ -101,8 +101,25 @@ println(self)
       beRef ! Stop
       expectMsg(Dead)
   }
+  "send a finished message" in {
+    var b =0
+    class MyTickerBehavior(period:FiniteDuration)(toRun:() =>Unit) extends TickerBehavior(period:FiniteDuration)(toRun)
+      {
+        override protected def stopTicker: Boolean = {
+          b == 6
+        }
+      }
+   var beRef =  TestActorRef(new MyTickerBehavior(20 millis)(()=>{
+     b+=2
+   }) ,"finishedTickerBehavior");
+   
+   beRef ! Setup()
+   beRef ! Run
+   
+   awaitCond(b==6, 1 seconds, 40 millis)
+   expectMsg(Finished)
+  }
 }
-//TODO: Add finished Test for tickerBehavior
 
 "A ParallelBehavior" must {
   
@@ -125,7 +142,7 @@ println(self)
     var beRef = TestActorRef(new ParralelBehavior(listBp),"parrallelBehavior")
     
     beRef ! Setup()
-    awaitCond(a1==6 && a2==9, 300 millis)
+    awaitCond(a1==6 && a2==9, 1 seconds)
   }
   
   "launch several behaviors asynchronously" in {
@@ -145,12 +162,11 @@ println(self)
     
     beRef ! Setup()
     beRef ! Run
-    awaitCond(a1==17 && a2==14, 300 millis)
+    awaitCond(a1==17 && a2==14, 1 seconds)
     expectMsg(Finished)
   }
   
   "receive a Finished message from every agent stopped"  in {
-    case class subMessage(a: Int)
     
     val bp1 = BehaviorProxy{OneShotBehavior{
       var a = 1  
@@ -168,6 +184,7 @@ println(self)
     beRef ! Run
     
     expectMsg(Finished)
+    expectNoMsg(100 millis)
   }  
 }
 
