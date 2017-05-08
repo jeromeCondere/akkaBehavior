@@ -5,12 +5,9 @@ import akka.actor.Actor
 import akka.actor.PoisonPill
 sealed trait BehaviorMessage
 //message types
-sealed trait AskMessage extends BehaviorMessage
 sealed trait RequestMessage extends BehaviorMessage
 sealed trait InformMessage extends BehaviorMessage
-//Ask messages
-case object AskForStop  extends AskMessage
-case object AskForRun  extends AskMessage
+
 //Request messages
 case object Run extends RequestMessage
 case object ComplexRun extends RequestMessage
@@ -25,6 +22,7 @@ case object Poke extends RequestMessage
 //Inform message
 case object Finished extends InformMessage
 case object Dead extends InformMessage
+case class Error(e :Exception)
 
 sealed trait BehaviorState
 case object Idle extends BehaviorState
@@ -39,7 +37,6 @@ case object Killed extends BehaviorState
 
 sealed trait BehaviorData
 case object Void extends BehaviorData
-case class ComplexData[A](val info: A)
 object doNothing {
   def apply() = () => {}
 }
