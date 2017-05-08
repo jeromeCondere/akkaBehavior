@@ -31,7 +31,6 @@ case object Running extends BehaviorState
 case object ComplexRunning extends BehaviorState
 case object FinishedRun extends BehaviorState
 case object Ended extends BehaviorState
-case object Waiting extends BehaviorState
 case object Killed extends BehaviorState
 
 
@@ -69,8 +68,15 @@ abstract class AbstractBehavior(toRun:() => Unit) extends FSM[BehaviorState,Beha
   when(Idle)
   {
      case  Event(Setup(s),_) => supervisor = s
-                                init
-                                goto(Ready)  
+                                 try {   
+                                   init
+                                   goto(Ready)
+                                 } catch  {
+                                   case e :Exception => supervisor ! Error(e)
+                                                        self ! Poke
+                                                        goto(Killed)
+                                 }
+                                  
   }
 
   when(Ready)
